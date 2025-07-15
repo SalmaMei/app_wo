@@ -1,33 +1,30 @@
 <?php
-// Koneksi database
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "salon_db";
-
-$conn = mysqli_connect($host, $user, $pass, $db);
-if (!$conn) {
-  die("Koneksi gagal: " . mysqli_connect_error());
-}
-
 session_start();
-$message = "";
+include 'koneksi.php';
 
-// Proses login
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $username = mysqli_real_escape_string($conn, $_POST["username"]);
-  $password = md5($_POST["password"]); // ⚠️ Gunakan bcrypt di produksi
+// jika form dikirim
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $username = trim($_POST['username']);
+    $password = $_POST['password'];
 
-  $sql = "SELECT * FROM users WHERE username='$username' AND password='$password'";
-  $result = mysqli_query($conn, $sql);
+    // cek user
+    $result = $conn->query("SELECT * FROM user WHERE username='$username' LIMIT 1");
 
-  if (mysqli_num_rows($result) == 1) {
-    $_SESSION["username"] = $username;
-    header("Location: index.php");
-    exit();
-  } else {
-    $message = "Username atau Password salah.";
-  }
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+        if (password_verify($password, $user['password'])) {
+            // login sukses
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['nama'] = $user['nama'];
+            header("Location: dashboard.php");
+            exit;
+        } else {
+            $error = "Password salah!";
+        }
+    } else {
+        $error = "Username tidak ditemukan!";
+    }
 }
 ?>
 
