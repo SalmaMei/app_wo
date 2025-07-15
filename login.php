@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       height: 100vh;
     }
     .login-container {
-      background-color: rgba(255, 255, 255, 0.95);
+      background-color: rgba(11, 139, 245, 0.95);
       padding: 30px;
       border-radius: 8px;
       box-shadow: 0 0 15px rgba(0,0,0,0.3);
